@@ -227,66 +227,40 @@ namespace PalladiumBookApp.Controllers
             int value = 0;
             do
             {
-                value = GetInputInt();
-
-                if (value >= 1 && value <= books.Count)
+                using (var context = new PalladiumDBContext())
                 {
-                    //    Console.WriteLine();
-                    //    Console.WriteLine();
-                    //    Console.BackgroundColor = ConsoleColor.White;
-                    //    Console.ForegroundColor = ConsoleColor.Red;
-                    //    Console.Write("Updating the database...");
-                    //    Console.ResetColor();
-                    //    Console.ResetColor();
-                    //    Console.WriteLine();
-                    validId = true;
+                    value = GetInputInt();
+                    var item = context.Books.First(f => f.Id == value);
+
+                    if (item != null)
+                    {
+                        Console.Write("Please enter the new name: ");
+                        var newName = Console.ReadLine();
+                        item.Name = newName;
+
+                        Console.WriteLine();
+                        Console.BackgroundColor = ConsoleColor.White;
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.Write($"{item.Name} has been updated!");
+                        Console.ResetColor();
+                        Console.ResetColor();
+                        Thread.Sleep(1000);
+                        context.SaveChanges();
+                        validId = true;
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine($"\n\n{value} is an invalid selection.  Please try again.");
+                        Console.ResetColor();
+                        Thread.Sleep(1000);
+                        validId = false;
+                    }
                 }
-                else
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("\n\nInvalid PlayerID. Please try again.\n\n");
-                    Console.ResetColor();
-                    validId = false;
-                }
-
-            } while (!validId);
-
-
-            using (var context = new PalladiumDBContext())
-            {
-                var item = context.Books.First(f => f.Id == value);
-
-
-                var newName = String.Empty;
-                Console.Write("Please enter the new name: ");
-                newName = Console.ReadLine();
-
-                if (item != null)
-                {
-                    item.Name = newName;
-                }
-
-                //item.Wins++;
-                //item.DateWin = DateTime.Now;
-
-                //context.WinHistory.Add(new WinHistory
-                //{
-                //    NameId = item.NameId,
-                //    WinDate = item.DateWin
-                //});
-
-                context.SaveChanges();
-
-                Console.WriteLine();
-                Console.BackgroundColor = ConsoleColor.White;
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.Write($"{item.Name} has been updated!");
-                Console.ResetColor();
-                Console.ResetColor();
-                Thread.Sleep(1000);
-
-            }
+            } while (validId == false);
         }
+
+
 
 
         /// <summary>
@@ -310,6 +284,7 @@ namespace PalladiumBookApp.Controllers
             Console.WriteLine($"5) Add Category");
             Console.WriteLine($"6) Add Game");
             Console.WriteLine($"7) Update Book Name");
+            Console.WriteLine($"8) Test Find Book");
             Console.WriteLine($"9) Exit App");
             Console.WriteLine();
         }
@@ -328,6 +303,32 @@ namespace PalladiumBookApp.Controllers
 
             return value;
         }
+
+        public int GetInputInt(int min, int max)
+        {
+            int val = 0;
+            bool valid = true;
+
+            do
+            {
+                val = GetInputInt();
+                if (val >= min && val <= max)
+                {
+                    valid = true;
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine($"\n{val} is an invalid pick.\n\n");
+                    Console.ResetColor();
+                    valid = false;
+                }
+
+            } while (valid == false);
+
+            return val;
+        }
+
 
 
         public void Start()
@@ -394,6 +395,13 @@ namespace PalladiumBookApp.Controllers
                         Console.ResetColor();
                         Console.ReadLine();
                         break;
+                    case 8:
+                    //TestFind2();
+                    //Console.ForegroundColor = ConsoleColor.Cyan;
+                    //Console.Write("\n\nPress enter to go back to the main menu");
+                    //Console.ResetColor();
+                    //Console.ReadLine();
+                    //break;
                     case 9:
                         Console.ForegroundColor = ConsoleColor.Green;
                         Console.WriteLine("\n\nThank you for using the Palladium Book App");
@@ -410,7 +418,8 @@ namespace PalladiumBookApp.Controllers
 
             } while (menuSelection != 9);
         }
-
-
     }
+
 }
+
+
